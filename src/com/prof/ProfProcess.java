@@ -16,6 +16,38 @@ class ProfProcess
 	
 	private ArrayList<StudentDTO> stuList;	// 학생 목록
 	
+	// 비밀 번호 수정
+	void updatePassword(String profCd)
+	{
+		try
+		{
+			String password;
+			
+			while(true)
+			{
+				password = InputHandler.readString("변경할 비밀번호 입력 : ");
+				
+				if(password.length() >= 6)
+				{
+					break;
+				}
+				else
+				{
+					System.out.println("비밀번호는 6자리를 넘어야합니다.");
+				}
+			}
+			
+			if(dao.updatePassword(profCd, password) > 0)
+			{
+				System.out.println(">> 비밀번호 변경 완료");
+			}
+		} 
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+	
 	// 강의 목록 출력
 	void subList(String profCd)
 	{
