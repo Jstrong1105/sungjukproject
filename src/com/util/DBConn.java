@@ -24,6 +24,18 @@ public class DBConn
 		return dbConn;
 	}
 	
+	public static Connection getConnection(String url, String user, String psw) throws ClassNotFoundException, SQLException
+	{
+		if(dbConn == null)
+		{
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			dbConn = DriverManager.getConnection(url,user,psw);
+		}
+		
+		return dbConn;
+	} 
+	
 	public static void close() 
 	{
 		try
