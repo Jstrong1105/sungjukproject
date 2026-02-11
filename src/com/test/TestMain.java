@@ -7,19 +7,19 @@ public class TestMain
 {
 	public static void main(String[] args)
 	{
-		AdminProcess admProc = new AdminProcess();
+		//AdminProcess admProc = new AdminProcess();
 		
 	// 교수 등록
-		ProfessorDTO profDto = new ProfessorDTO();
-		profDto.setName("jdbc 테스트");
-		profDto.setSsn("001201-1234567");
+		//ProfessorDTO profDto = new ProfessorDTO();
+		//profDto.setName("jdbc 테스트");
+		//profDto.setSsn("001201-1234567");
 		
 		// 잘못된 주민번호 삽입 후 시도
 		// profDto.setSsn("000101-12345678");	// 뒷자리 8자리
 		// profDto.setSsn("000101-123456 7");		// 공백 포함
 
-		int result = admProc.createProfessor(profDto);
-		System.out.println(result);
+		//int result = admProc.createProfessor(profDto);
+		//System.out.println(result);
 		
 	// 교수 조회
 		/*

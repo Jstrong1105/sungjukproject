@@ -3,16 +3,16 @@ package com.main;
 import com.util.FunctionUtil;
 import com.util.InputHandler;
 
-class MenuRender<E extends Enum<E> & FunctionUtil>
+public class MenuRender<E extends Enum<E> & FunctionUtil>
 {
-	MenuRender(E[] list)
+	public MenuRender(E[] list)
 	{
 		this.list = list;
 	}
 	
 	private E[] list;
 	
-	void run(String name,String id)
+	public void run(String name,String id)
 	{
 		while(true)
 		{

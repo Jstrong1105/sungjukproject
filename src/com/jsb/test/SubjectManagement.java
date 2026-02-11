@@ -8,6 +8,7 @@ import com.subject.TextbookProcess;
 
 public class SubjectManagement
 {
+	/*
 	// 과목 관리
 	public void runSubjectMgmt()
 	{
@@ -189,5 +190,5 @@ public class SubjectManagement
 		} while (true);
 
 	}
-	
+	*/
 }

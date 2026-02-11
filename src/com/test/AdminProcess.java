@@ -4,13 +4,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.main.MenuRender;
+import com.util.FunctionUtil;
+import com.util.InputHandler;
+
 public class AdminProcess
 {
 // 주요 속성
 	private AdminDAO dao;
 	
 // 생성자
-	AdminProcess()
+	public AdminProcess()
 	{
 		dao = new AdminDAO();
 	}
@@ -46,7 +50,7 @@ public class AdminProcess
 	}
 	
 	// 성적의 숫자 범위 검증 (0~100)
-	public boolean confirmScoreNum(ScoreDTO dto)
+	private boolean confirmScoreNum(ScoreDTO dto)
 	{
 		List<Integer> scoreList = new ArrayList<Integer>();
 		
@@ -65,12 +69,110 @@ public class AdminProcess
 		return true;
 	}
 	
+	// 교수 기능 메뉴
+	public void profFunc()
+	{
+		MenuRender<ProfMenu> menu = new MenuRender<>(ProfMenu.values());
+		menu.run("교수 수정", "");
+	}
 	
+	private enum ProfMenu implements FunctionUtil
+	{
+		PROF_PRINT("교수 출력", new AdminProcess() :: printProf),
+		PROF_INSERT("교수 입력", new AdminProcess() :: insertProf),
+		PROF_UPDATE("교수 수정", new AdminProcess() :: updateProf),
+		PROF_DELETE("교수 삭제", new AdminProcess() :: deleteProf)
+		;
+
+		ProfMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
 	
+	//교수 등록 메소드
+	private void insertProf()
+	{
+		String name = InputHandler.readString(">> 교수 이름을 입력 : ");
+		String ssn = InputHandler.readString(">> 주민번호를 입력 : ");
+		
+		ProfessorDTO dto = new ProfessorDTO();
+		dto.setName(name);
+		dto.setSsn(ssn);
+		
+		if(createProfessor(dto) == -1)
+		{
+			System.out.println(">> 계정 추가 실패");
+		}
+	}
+	
+	// 교수 수정 메소드
+	private void updateProf()
+	{
+		String profCd = InputHandler.readString(">> 변경할 교수의 코드 : ");
+		String name = InputHandler.readString(">> 변경할 교수의 이름 : ");
+		String pw = InputHandler.readString(">> 변경할 교수의 패스워드 : ");
+		
+		ProfessorDTO dto = new ProfessorDTO();
+		dto.setProfCd(profCd);
+		dto.setName(name);
+		dto.setPw(pw);
+		
+		if(modifyProfessor(dto) > 0)
+		{
+			System.out.println(">> 교수 데이터 수정 완료");
+		}
+	}
+	
+	// 교수 삭제 메소드
+	private void deleteProf()
+	{
+		String profCd = InputHandler.readString(">> 삭제할 교수의 코드 : ");
+		
+		if(removeProfessor(profCd) > 0)
+		{
+			System.out.println(">> 교수 데이터 삭제 완료");
+		}
+	}
+	
+	// 교수 출력 메소드 / 밑에 교수 조회에서 받아온 리스트 출력만 하면됨
+	public void printProf()
+	{
+		System.out.println("미완성입니다.");
+	}
 	
 // 교수 기능
+	
+	// 교수 조회
+	private List<ProfessorDetailDTO> getAllProfessor()
+	{
+		List<ProfessorDetailDTO> result = new ArrayList<ProfessorDetailDTO>();
+		
+		dao.connect();
+		result = dao.selectAllProfessor();
+		dao.disconnect();
+		
+		return result;
+	}
+	
 	// 교수 등록
-	public int createProfessor(ProfessorDTO profDto)
+	private int createProfessor(ProfessorDTO profDto)
 	{
 		int result = 0;
 		
@@ -116,20 +218,6 @@ public class AdminProcess
 		return result;
 	} // createProfessor() END
 	
-	
-	// 교수 조회
-	public List<ProfessorDetailDTO> getAllProfessor()
-	{
-		List<ProfessorDetailDTO> result = new ArrayList<ProfessorDetailDTO>();
-		
-		dao.connect();
-		result = dao.selectAllProfessor();
-		dao.disconnect();
-		
-		return result;
-	}
-	
-	
 	// 교수 수정
 	public int modifyProfessor(ProfessorDTO profDto)
 	{
@@ -144,7 +232,7 @@ public class AdminProcess
 	
 	
 	// 교수 삭제
-	public int removeProfessor(String profCd)
+	private int removeProfessor(String profCd)
 	{
 		int result = 0;
 		
@@ -155,10 +243,111 @@ public class AdminProcess
 		return result;
 	}
 
+	// 학생 기능 메뉴
+	public void studentFunc()
+	{
+		MenuRender<StudentMenu> menu = new MenuRender<>(StudentMenu.values());
+		menu.run("학생", "");
+	}
+	
+	private enum StudentMenu implements FunctionUtil
+	{
+		STU_PRINT("학생 출력",new AdminProcess() :: printStudent),
+		STU_INSERT("학생 입력",new AdminProcess() :: insertStudent),
+		STU_UPDATE("학생 수정",new AdminProcess() :: updateStudent),
+		STU_DELETE("학생 삭제",new AdminProcess() :: deleteStudent)
+		;
 
+		StudentMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
+	
+	// 학생 등록 메소드
+	private void insertStudent()
+	{
+		String name = InputHandler.readString(">> 학생 이름 입력 : ");
+		String ssn = InputHandler.readString(">> 주민번호 입력 : ");
+		StudentDTO dto = new StudentDTO();
+		dto.setName(name);
+		dto.setSsn(ssn);
+		
+		if(createStudent(dto) > 0)
+		{
+			System.out.println(">> 학생 입력 완료");
+		}
+	}
+	
+	// 학생 수정 메소드
+	private void updateStudent()
+	{
+		String studentCd = InputHandler.readString(">> 수정할 학생의 학번 : ");
+		String name = InputHandler.readString(">> 변경할 이름 : ");
+		String pw = InputHandler.readString(">> 변경할 비밀번호 : ");
+		String ssn = InputHandler.readString(">> 변경할 주민번호 : ");
+		
+		StudentDTO dto = new StudentDTO();
+		dto.setStudentCd(studentCd);
+		dto.setName(name);
+		dto.setPw(pw);
+		dto.setSsn(ssn);
+		
+		if(modifyStudent(dto) > 0)
+		{
+			System.out.println(">> 학생 수정 완료");
+		}
+	}
+	
+	// 학생 삭제 메소드
+	private void deleteStudent()
+	{
+		String studentCd = InputHandler.readString(">> 삭제할 학생의 학번 : ");
+	
+		if(removeStudent(studentCd) > 0)
+		{
+			System.out.println(">> 학생 삭제 완료");
+		}
+	}
+	
+	// 학생 조회 메소드 / 밑에 학생 전체 조회에서 받아온 리스트 출력만 하면 됨
+	private void printStudent()
+	{
+		System.out.println("미완성입니다.");
+	}
+	
 // 학생 기능
+	
+	// 학생 전체 조회
+	private List<StudentDetailDTO> getAllStudents()
+	{
+		List<StudentDetailDTO> result = new ArrayList<StudentDetailDTO>();
+		
+		dao.connect();
+		result = dao.selectAllStudents();
+		dao.disconnect();
+		
+		return result;
+	}
+	
 	// 학생 등록
-	public int createStudent(StudentDTO stdtDto)
+	private int createStudent(StudentDTO stdtDto)
 	{
 		int result;
 		
@@ -183,22 +372,8 @@ public class AdminProcess
 		return result;
 	}
 	
-	
-	// 학생 전체 조회
-	public List<StudentDetailDTO> getAllStudents()
-	{
-		List<StudentDetailDTO> result = new ArrayList<StudentDetailDTO>();
-		
-		dao.connect();
-		result = dao.selectAllStudents();
-		dao.disconnect();
-		
-		return result;
-	}
-	
-	
 	// 학생 수정
-	public int modifyStudent(StudentDTO stdtDto)
+	private int modifyStudent(StudentDTO stdtDto)
 	{
 		int result = 0;
 		
@@ -211,7 +386,7 @@ public class AdminProcess
 
 	
 	// 학생 삭제
-	public int removeStudent(String studentCd)
+	private int removeStudent(String studentCd)
 	{
 		int result = 0;
 		
@@ -222,10 +397,118 @@ public class AdminProcess
 		return result;
 	}
 
+	// 성적 메뉴
+	public void scoreFunc()
+	{
+		MenuRender<ScoreMenu> menu = new MenuRender<>(ScoreMenu.values());
+		menu.run("성적", "");
+	}
 	
+	private enum ScoreMenu implements FunctionUtil
+	{
+		SCORE_PRINT("성적 출력", new AdminProcess() :: printScore),
+		SCORE_INSERT("성적 입력", new AdminProcess() :: insertScore),
+		SCORE_UPDATE("성적 수정", new AdminProcess() :: updateScore),
+		SCORE_DELETE("성적 삭제", new AdminProcess() :: deleteScore)
+		;
+
+		ScoreMenu(String name, Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
+	
+	// 성적 입력 메소드
+	private void insertScore()
+	{
+		String openSubCd = InputHandler.readString(">> 입력할 개설과목 코드 : ");
+		String regiCd = InputHandler.readString(">> 입력할 수강신청 코드 : ");
+		int att = InputHandler.readInt(">> 출결 성적 : ",0,100);
+		int wri = InputHandler.readInt(">> 필기 성적 : ",0,100);
+		int pra = InputHandler.readInt(">> 실기 성적 : ",0,100);
+		
+		ScoreDTO dto = new ScoreDTO();
+		dto.setOpenSubCd(openSubCd);
+		dto.setCourRegiCd(regiCd);
+		dto.setAttendance(att);
+		dto.setWritten(wri);
+		dto.setPractical(pra);
+		
+		if(createScore(dto) > 0)
+		{
+			System.out.println(">> 성적 입력 완료");
+		}
+	}
+	
+	// 성적 수정 메소드
+	private void updateScore()
+	{
+		String scoreCd = InputHandler.readString(">> 수정할 성적 코드 : ");
+		int att = InputHandler.readInt(">> 출결 점수 : ",0,100);
+		int wri = InputHandler.readInt(">> 필기 점수 : ",0,100);
+		int pra = InputHandler.readInt(">> 실기 점수 : ",0,100);
+		
+		ScoreDTO dto = new ScoreDTO();
+		dto.setScoreCd(scoreCd);
+		dto.setAttendance(att);
+		dto.setWritten(wri);
+		dto.setPractical(pra);
+		
+		if(modifyScore(dto) > 0)
+		{
+			System.out.println(">> 성적 수정 완료");
+		}
+	}
+	
+	// 성적 삭제 메소드
+	private void deleteScore()
+	{
+		String scoreCd = InputHandler.readString(">> 삭제할 성적 코드 : ");
+		
+		if(removeScore(scoreCd) > 0)
+		{
+			System.out.println(">> 성적 삭제 완료");
+		}
+	}
+	
+	// 성적 조회 메소드 / 밑에 성적 전체 조회 메소드에서 받아온 리스트 출력만 하면 됨
+	private void printScore()
+	{
+		System.out.println("미구현입니다.");
+	}
+
 // (관리자) 성적 관리
+	
+	// 성적 전체 조회
+	private List<ScoreDetailDTO> getAllScore()
+	{
+		List<ScoreDetailDTO> result = new ArrayList<ScoreDetailDTO>();
+		
+		dao.connect();
+		result = dao.selectAllScore();
+		dao.disconnect();
+		
+		return result;
+	}
+	
 	// 성적 입력
-	public int createScore(ScoreDTO scoreDto)
+	private int createScore(ScoreDTO scoreDto)
 	{
 		int result = 0;
 		
@@ -241,22 +524,8 @@ public class AdminProcess
 		return result;
 	}
 	
-	
-	// 성적 전체 조회
-	public List<ScoreDetailDTO> getAllScore()
-	{
-		List<ScoreDetailDTO> result = new ArrayList<ScoreDetailDTO>();
-		
-		dao.connect();
-		result = dao.selectAllScore();
-		dao.disconnect();
-		
-		return result;
-	}
-	
-	
 	// 성적 수정
-	public int modifyScore(ScoreDTO scoreDto)
+	private int modifyScore(ScoreDTO scoreDto)
 	{
 		int result = 0;
 		
@@ -269,7 +538,7 @@ public class AdminProcess
 	
 	
 	// 성적 삭제
-	public int removeScore(String scoreCd)
+	private int removeScore(String scoreCd)
 	{
 		int result = 0;
 	
@@ -280,23 +549,96 @@ public class AdminProcess
 		return result;
 	}
 	
-	
-	
-// (관리자) 수강 신청 관리
-	// 수강 신청
-	public int createCourRegi(CourseRegistrationDTO courRegiDto)
+	// 수강신청 메뉴
+	public void regiFunc()
 	{
-		int result = 0;
-		
-		dao.connect();
-		result = dao.insertCourRegi(courRegiDto);
-		dao.disconnect();
-		
-		return result;
+		MenuRender<RegiMenu> menu = new MenuRender<>(RegiMenu.values());
+		menu.run("수강신청", "");
 	}
 	
+	private enum RegiMenu implements FunctionUtil
+	{
+		REGI_PRINT("수강신청 출력",new AdminProcess() :: printRegi),
+		REGI_INSERT("수강신청 입력",new AdminProcess() :: insertRegi),
+		REGI_UPDATE("수강신청 수정",new AdminProcess() :: updateRegi),
+		REGI_DELETE("수강신청 삭제",new AdminProcess() :: deleteRegi)
+		;
+
+		RegiMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
+	
+	// 수강 신청 추가 메소드
+	private void insertRegi()
+	{
+		String openCourCd = InputHandler.readString(">> 개설과정 코드 : ");
+		String studentCd = InputHandler.readString(">> 학생 코드 : ");
+		
+		CourseRegistrationDTO dto = new CourseRegistrationDTO();
+		dto.setOpenCourCd(openCourCd);
+		dto.setStudentCd(studentCd);
+		
+		if(createCourRegi(dto) > 0)
+		{
+			System.out.println(">> 수강 신청 완료");
+		}
+	}
+	
+	// 수강 신청 수정 메소드
+	private void updateRegi()
+	{
+		String courRegiCd = InputHandler.readString(">> 수정할 수강신청 코드 : ");
+		String openCourseCd = InputHandler.readString(">> 수정할 개설과정 코드 : ");
+		
+		CourseRegistrationDTO dto = new CourseRegistrationDTO();
+		dto.setCourRegiCd(courRegiCd);
+		dto.setOpenCourCd(openCourseCd);
+		
+		if(modifyCourRegi(dto) > 0)
+		{
+			System.out.println(">> 수강신청 수정 완료");
+		}
+	}
+	
+	// 수강 신청 삭제 메소드
+	private void deleteRegi()
+	{
+		String courRegiCd = InputHandler.readString(">> 삭제할 수강신청 코드 : ");
+		
+		if(removeCourRegi(courRegiCd) > 0)
+		{
+			System.out.println(">> 수강신청 삭제 완료");
+		}
+	}
+	
+	// 수강 신청 조회 메소드 / 밑에 수강 신청 전체 조회 메소드에서 받아온 리스트 출력만 하면 됨
+	private void printRegi()
+	{
+		System.out.println("미구현입니다");
+	}
+	
+// (관리자) 수강 신청 관리
+	
 	// 수강 신청 전체 조회
-	public List<CourseRegistrationDetailDTO> getAllCourRegi()
+	private List<CourseRegistrationDetailDTO> getAllCourRegi()
 	{
 		List<CourseRegistrationDetailDTO> result = new ArrayList<CourseRegistrationDetailDTO>();
 		
@@ -307,9 +649,20 @@ public class AdminProcess
 		return result;
 	}
 	
+	// 수강 신청
+	private int createCourRegi(CourseRegistrationDTO courRegiDto)
+	{
+		int result = 0;
+		
+		dao.connect();
+		result = dao.insertCourRegi(courRegiDto);
+		dao.disconnect();
+		
+		return result;
+	}
 	
 	// 수강 신청 수정
-	public int modifyCourRegi(CourseRegistrationDTO courRegiDto)
+	private int modifyCourRegi(CourseRegistrationDTO courRegiDto)
 	{
 		int result = 0;
 		
@@ -322,7 +675,7 @@ public class AdminProcess
 	
 	
 	// 수강 신청 삭제
-	public int removeCourRegi(String courRegiCd)
+	private int removeCourRegi(String courRegiCd)
 	{
 		int result = 0;
 		

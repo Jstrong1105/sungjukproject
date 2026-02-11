@@ -1,18 +1,22 @@
 package com.main;
 
-import com.prof.ProfFunction;
-import com.sign.SignUpList;
-import com.student.StudentFunction;
+import com.classroom.ClassRoomProcess;
+import com.course.CourseProcess;
+import com.opencourse.OpenCourseProcess;
+import com.prof.ProfProcess;
+import com.sign.Login;
+import com.sign.SignUp;
+import com.student.StudentProcess;
+import com.subject.OpenSubjectProcess;
+import com.subject.SubjectProcess;
+import com.subject.TextbookProcess;
+import com.test.AdminProcess;
 import com.util.DBConn;
+import com.util.FunctionUtil;
 import com.util.InputHandler;
-import com.util.Login;
 
 public class Launcher
 {
-	private static StudentFunction[] studentF = StudentFunction.values();	// 학생 사용 메소드
-	private static ProfFunction[] profF = ProfFunction.values();			// 교수 사용 메소드
-	private static SignUpList[] signUp = SignUpList.values();				// 회원 가입 메소드
-	
 	public static void main(String[] args)
 	{	
 		while(true)
@@ -49,8 +53,7 @@ public class Launcher
 	// 회원가입 진행
 	private static void signUp()
 	{
-		MenuRender<SignUpList> menu = new MenuRender<>(signUp);
-		menu.run("회원가입","");
+		SignUp.signUp();
 	}
 	
 	// 로그인 진행
@@ -90,9 +93,7 @@ public class Launcher
 					{
 						InputHandler.readString(">> 학생 로그인 성공");
 		
-						MenuRender<StudentFunction> menu = new MenuRender<>(studentF);
-						
-						menu.run("학생",id);
+						StudentProcess.students(id);
 					}
 					else
 					{
@@ -107,9 +108,7 @@ public class Launcher
 					{
 						InputHandler.readString(">> 교수 로그인 성공");
 						
-						MenuRender<ProfFunction> menu = new MenuRender<>(profF);
-						
-						menu.run("교수",id);
+						ProfProcess.prof(id);
 					}
 					else 
 					{
@@ -120,10 +119,12 @@ public class Launcher
 				// 관리자 로그인
 				else if(answer == 3)
 				{
+					
 					if(login.adminLogin(id, psw))
 					{
 						InputHandler.readString(">> 관리자 로그인 성공");
 
+						admin();
 					}
 					else 
 					{
@@ -131,6 +132,49 @@ public class Launcher
 					}
 				}
 			}
+		}
+	}
+	
+	// 관리자 메뉴
+	private static void admin()
+	{
+		MenuRender<AdminMenu> menu = new MenuRender<>(AdminMenu.values());
+		menu.run("관리자", "");
+	}
+
+	private enum AdminMenu implements FunctionUtil
+	{
+		CLASSROOM("강의실 메뉴",new ClassRoomProcess() :: classRoomFunc),
+		COURSE("과정 메뉴", new CourseProcess() :: courseFunc),
+		SUBJECT("과목 메뉴", new SubjectProcess() :: subjectFunc),
+		TEXTBOOK("교재 메뉴", new TextbookProcess() :: textBookFunc),
+		OPEN_COURSE("개설 과정 메뉴", new OpenSubjectProcess() :: openSubjectFunc),
+		OPEN_SUBJECT("개설 과목 메뉴", new OpenCourseProcess() :: openCourseFunc),
+		PROFESSOR("교수 메뉴", new AdminProcess() :: profFunc),
+		STUDENT("학생 메뉴",new AdminProcess() :: studentFunc),
+		SCORE("성적 메뉴",new AdminProcess() :: scoreFunc),
+		REGISTRATION("수강신청 메뉴",new AdminProcess() :: regiFunc)
+		;
+		
+		AdminMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		final String name;
+		final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+	
+		@Override
+		public void run(String id)
+		{
+			func.run();
 		}
 	}
 }

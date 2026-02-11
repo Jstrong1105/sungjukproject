@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class AdminManagement
 {
+	/*
 	// FIXME ※ 대충함....
 	// 과목 관리
 	public void runSubjectMgmt()
@@ -53,5 +54,5 @@ public class AdminManagement
 		} while (true);
 
 	}
-
+*/
 }

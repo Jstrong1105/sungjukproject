@@ -8,6 +8,9 @@ import com.classroom.ClassRoomDAO;
 import com.classroom.ClassRoomDTO;
 import com.course.CourseDAO;
 import com.course.CourseDTO;
+import com.main.MenuRender;
+import com.util.FunctionUtil;
+import com.util.InputHandler;
 
 public class OpenCourseProcess
 {
@@ -17,370 +20,437 @@ public class OpenCourseProcess
 	private ClassRoomDAO roomdao;
 	private OpenCourseDAO opcourdao;
 	
-	public OpenCourseProcess() throws ClassNotFoundException, SQLException
+	public OpenCourseProcess() 
 	{
-		courdao = new CourseDAO();
-		roomdao = new ClassRoomDAO();
-		opcourdao = new OpenCourseDAO();
+		try
+		{
+			courdao = new CourseDAO();
+			roomdao = new ClassRoomDAO();
+			opcourdao = new OpenCourseDAO();
+		} 
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+	
+	public void openCourseFunc()
+	{
+		MenuRender<OpenCourseMenu> menu = new MenuRender<>(OpenCourseMenu.values());
+		menu.run("개설과정", "");
+	}
+	
+	private enum OpenCourseMenu implements FunctionUtil
+	{
+		OPEN_COURSE_PRINT("개설과정 출력",new OpenCourseProcess() :: opencourSelectAll),
+		OPEN_COURSE_INSERT("개설과정 입력",new OpenCourseProcess() :: opcourInsert),
+		OPEN_COURSE_UPDATE("개설과정 수정",new OpenCourseProcess() :: opencourUpdate),
+		OPEN_COURSE_DELETE("개설과정 삭제",new OpenCourseProcess() :: opencourDelete)
+		;
+
+		OpenCourseMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
 	}
 	
 	// 개설과정 등록
-	public void opcourInsert() throws ClassNotFoundException, SQLException
+	private void opcourInsert()
 	{
-		System.out.println("\n[개설과정 등록]");
-		System.out.println("------------------");
-		System.out.println("과정명");
-		System.out.println("------------------");
-		for (CourseDTO dto : courdao.list())
+		try
 		{
-			System.out.println(dto.getCourname());
-		}
-		System.out.println("------------------");
-		
-		while (true)
-		{
-			System.out.print("과정명 : ");
-			String courname = sc.next();
-			System.out.println();
-			
-			ArrayList<CourseDTO> courlist = courdao.list("COUR_NAME", courname);
-			
-			if (courlist.size() > 0)
+			System.out.println("\n[개설과정 등록]");
+			System.out.println("------------------");
+			System.out.println("과정명");
+			System.out.println("------------------");
+			for (CourseDTO dto : courdao.list())
 			{
-				System.out.println("------------------");
-				System.out.println("강의실");
-				System.out.println("------------------");
-				for (ClassRoomDTO dto : roomdao.list())
-				{
-					System.out.println(dto.getRoomname());
-				}
-				System.out.println("------------------");
-				
-				while (true)
-				{
-					System.out.print("강의실 : ");
-					String roomname = sc.next();
-					ArrayList<ClassRoomDTO> roomlist = roomdao.list("CLASSROOM_NAME", roomname);
-					
-					if (roomlist.size() > 0)
-					{
-						String startdt = "";
-						while (true)
-						{
-							try
-							{
-								System.out.print("시작일(YYYY-MM-DD) : ");
-								startdt = sc.next();
-								java.sql.Date.valueOf(startdt);
-								break;
-								
-							} catch (Exception e)
-							{
-								System.out.println("다시 입력하세요");
-							}
-						}
-						
-						String enddt = "";
-						while (true)
-						{
-							try
-							{
-								System.out.print("종료일(YYYY-MM-DD) : ");
-								enddt = sc.next();
-								java.sql.Date.valueOf(enddt);
-								break;
-								
-							} catch (Exception e)
-							{
-								System.out.println("다시 입력하세요");
-							}	
-						}
-
-						OpenCourseDTO dto = new OpenCourseDTO();
-						
-						dto.setOpcourname(courname);
-						dto.setOpcourroom(roomname);
-						dto.setOpcourstart(startdt);
-						dto.setOpcourend(enddt);
-						
-						int result = opcourdao.add(dto);
-						
-						if (result > 0)
-						{
-							System.out.println(">> 등록이 완료되었습니다.");
-							return;
-						}
-					}
-					else
-					{
-						System.out.println(">> 존재하지 않는 강의실 입니다.\n");
-					}
-				}
+				System.out.println(dto.getCourname());
 			}
-			else
-			{
-				System.out.println(">> 존재하지 않는 과정명 입니다.\n");
-			}	
-		}
-	}
-	
-	// 개설과정 수정
-	public void opencourUpdate(int n) throws SQLException
-	{
-		ArrayList<OpenCourseDTO> list = opcourdao.list();
-		System.out.println("\n-------------------------------------------------------------------");
-		System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
-		System.out.println("-------------------------------------------------------------------");
-		for (OpenCourseDTO dto : list)
-		{
-			System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
-					, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10), dto.getOpcourend().substring(0, 10));
-		}
-		System.out.println("-------------------------------------------------------------------");
-		while (true)
-		{
-			System.out.print("수정할 개설과정(개설과정코드) : ");
-			String cd = sc.next();
+			System.out.println("------------------");
 			
-			ArrayList<OpenCourseDTO> listcd = opcourdao.list(cd);
-			
-			if (listcd.size() > 0)
+			while (true)
 			{
-				for (OpenCourseDTO dto : listcd)
-				{
-					System.out.println("[현재 정보 확인]");
-					System.out.println("\n-------------------------------------------------------------------");
-					System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
-					System.out.println("-------------------------------------------------------------------");
-					System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
-							, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10)
-							, dto.getOpcourend().substring(0, 10));
-					System.out.println("-------------------------------------------------------------------");
-				}
-				switch (n) {
-				case 1 :
-				{
-					System.out.println("--------------");
-					System.out.println("과정명");
-					System.out.println("--------------");
-					for (CourseDTO dto : courdao.list())
-					{
-						System.out.println(dto.getCourname());
-					}
-					System.out.println("--------------");
-					while (true)
-					{
-						System.out.print("새로운 과정명 : ");
-						String courname = sc.next();
-						
-						ArrayList<CourseDTO> courlist = courdao.list("COUR_NAME", courname);
-						
-						if (courlist.size() > 0)
-						{
-							OpenCourseDTO dto = new OpenCourseDTO();
-							
-							dto.setOpcourcd(cd);
-							dto.setOpcourname(courname);
-							
-							int result = opcourdao.courModify(dto);
-							
-							if (result > 0)
-							{
-								System.out.println("\n>> 수정이 완료되었습니다.");
-								return;
-							}	
-						}
-						
-						else
-						{
-							System.out.println(">> 존재하지 않는 과정명 입니다.\n");
-						}
-					} // while end
-				} // case 1 end
+				System.out.print("과정명 : ");
+				String courname = sc.next();
+				System.out.println();
 				
-				case 2 :
+				ArrayList<CourseDTO> courlist = courdao.list("COUR_NAME", courname);
+				
+				if (courlist.size() > 0)
 				{
-					System.out.println("--------------");
+					System.out.println("------------------");
 					System.out.println("강의실");
-					System.out.println("--------------");
+					System.out.println("------------------");
 					for (ClassRoomDTO dto : roomdao.list())
 					{
 						System.out.println(dto.getRoomname());
 					}
-					System.out.println("--------------");
+					System.out.println("------------------");
+					
 					while (true)
 					{
-						System.out.print("새로운 강의실 : ");
+						System.out.print("강의실 : ");
 						String roomname = sc.next();
-						
 						ArrayList<ClassRoomDTO> roomlist = roomdao.list("CLASSROOM_NAME", roomname);
 						
 						if (roomlist.size() > 0)
 						{
+							String startdt = "";
+							while (true)
+							{
+								try
+								{
+									System.out.print("시작일(YYYY-MM-DD) : ");
+									startdt = sc.next();
+									java.sql.Date.valueOf(startdt);
+									break;
+									
+								} catch (Exception e)
+								{
+									System.out.println("다시 입력하세요");
+								}
+							}
+							
+							String enddt = "";
+							while (true)
+							{
+								try
+								{
+									System.out.print("종료일(YYYY-MM-DD) : ");
+									enddt = sc.next();
+									java.sql.Date.valueOf(enddt);
+									break;
+									
+								} catch (Exception e)
+								{
+									System.out.println("다시 입력하세요");
+								}	
+							}
+
 							OpenCourseDTO dto = new OpenCourseDTO();
 							
-							dto.setOpcourcd(cd);
+							dto.setOpcourname(courname);
 							dto.setOpcourroom(roomname);
+							dto.setOpcourstart(startdt);
+							dto.setOpcourend(enddt);
 							
-							int result = opcourdao.roomModify(dto);
+							int result = opcourdao.add(dto);
 							
 							if (result > 0)
 							{
-								System.out.println("\n>> 수정이 완료되었습니다.");
+								System.out.println(">> 등록이 완료되었습니다.");
 								return;
-							}	
+							}
 						}
-						
 						else
 						{
 							System.out.println(">> 존재하지 않는 강의실 입니다.\n");
 						}
 					}
-				} // case 2 end
-				case 3 :
-				{	
-					while (true)
-					{
-						String startdt ="";
-						try
-						{
-							System.out.print("새로운 시작일(YYYY-MM-DD) : ");
-							startdt = sc.next();
-							java.sql.Date.valueOf(startdt);
+				}
+				else
+				{
+					System.out.println(">> 존재하지 않는 과정명 입니다.\n");
+				}	
+			}
+		} 
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
 	
-							OpenCourseDTO dto = new OpenCourseDTO();
-							
-							dto.setOpcourcd(cd);
-							dto.setOpcourstart(startdt);
-							
-							int result = opcourdao.startModify(dto);
-							
-							if (result > 0)
-							{
-								System.out.println("\n>> 수정이 완료되었습니다.");
-								return;
-							}	
-							
-						} catch (Exception e)
-						{
-							System.out.println(">> 다시 입력하세요.\n");
-						}
-						
-					}
-				} // case 3 end
-				
-				case 4 :
-				{	
-					while (true)
-					{
-						String enddt ="";
-						try
-						{
-							System.out.print("새로운 종료일(YYYY-MM-DD) : ");
-							enddt = sc.next();
-							java.sql.Date.valueOf(enddt);
-
-							OpenCourseDTO dto = new OpenCourseDTO();
-							
-							dto.setOpcourcd(cd);
-							dto.setOpcourend(enddt);
-							
-							int result = opcourdao.endModify(dto);
-							
-							if (result > 0)
-							{
-								System.out.println("\n>> 수정이 완료되었습니다.");
-								return;
-							}	
-							
-						} catch (Exception e)
-						{
-							System.out.println(">> 다시 입력하세요.\n");
-						}
-						
-					}
-				} // case 4 end
-				default: System.out.println(">> 잘못된 번호입니다.");
-				} // switch end
-				
-			}
-			else
+	// 개설과정 수정
+	private void opencourUpdate()
+	{
+		try
+		{
+			ArrayList<OpenCourseDTO> list = opcourdao.list();
+			System.out.println("\n-------------------------------------------------------------------");
+			System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
+			System.out.println("-------------------------------------------------------------------");
+			for (OpenCourseDTO dto : list)
 			{
-				System.out.println(">> 존재하지 않는 개설과정 입니다.\n");
+				System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
+						, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10), dto.getOpcourend().substring(0, 10));
 			}
-			
+			System.out.println("-------------------------------------------------------------------");
+			while (true)
+			{
+				System.out.print("수정할 개설과정(개설과정코드) : ");
+				String cd = sc.next();
+				
+				ArrayList<OpenCourseDTO> listcd = opcourdao.list(cd);
+				
+				if (listcd.size() > 0)
+				{
+					for (OpenCourseDTO dto : listcd)
+					{
+						System.out.println("[현재 정보 확인]");
+						System.out.println("\n-------------------------------------------------------------------");
+						System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
+						System.out.println("-------------------------------------------------------------------");
+						System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
+								, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10)
+								, dto.getOpcourend().substring(0, 10));
+						System.out.println("-------------------------------------------------------------------");
+					}
+					
+					int n = InputHandler.readInt("1. 과정명 / 2. 강의실 / 3. 시작일 / 4. 종료일",1,4);
+					
+					switch (n) {
+					case 1 :
+					{
+						System.out.println("--------------");
+						System.out.println("과정명");
+						System.out.println("--------------");
+						for (CourseDTO dto : courdao.list())
+						{
+							System.out.println(dto.getCourname());
+						}
+						System.out.println("--------------");
+						while (true)
+						{
+							System.out.print("새로운 과정명 : ");
+							String courname = sc.next();
+							
+							ArrayList<CourseDTO> courlist = courdao.list("COUR_NAME", courname);
+							
+							if (courlist.size() > 0)
+							{
+								OpenCourseDTO dto = new OpenCourseDTO();
+								
+								dto.setOpcourcd(cd);
+								dto.setOpcourname(courname);
+								
+								int result = opcourdao.courModify(dto);
+								
+								if (result > 0)
+								{
+									System.out.println("\n>> 수정이 완료되었습니다.");
+									return;
+								}	
+							}
+							
+							else
+							{
+								System.out.println(">> 존재하지 않는 과정명 입니다.\n");
+							}
+						} // while end
+					} // case 1 end
+					
+					case 2 :
+					{
+						System.out.println("--------------");
+						System.out.println("강의실");
+						System.out.println("--------------");
+						for (ClassRoomDTO dto : roomdao.list())
+						{
+							System.out.println(dto.getRoomname());
+						}
+						System.out.println("--------------");
+						while (true)
+						{
+							System.out.print("새로운 강의실 : ");
+							String roomname = sc.next();
+							
+							ArrayList<ClassRoomDTO> roomlist = roomdao.list("CLASSROOM_NAME", roomname);
+							
+							if (roomlist.size() > 0)
+							{
+								OpenCourseDTO dto = new OpenCourseDTO();
+								
+								dto.setOpcourcd(cd);
+								dto.setOpcourroom(roomname);
+								
+								int result = opcourdao.roomModify(dto);
+								
+								if (result > 0)
+								{
+									System.out.println("\n>> 수정이 완료되었습니다.");
+									return;
+								}	
+							}
+							
+							else
+							{
+								System.out.println(">> 존재하지 않는 강의실 입니다.\n");
+							}
+						}
+					} // case 2 end
+					case 3 :
+					{	
+						while (true)
+						{
+							String startdt ="";
+							try
+							{
+								System.out.print("새로운 시작일(YYYY-MM-DD) : ");
+								startdt = sc.next();
+								java.sql.Date.valueOf(startdt);
+		
+								OpenCourseDTO dto = new OpenCourseDTO();
+								
+								dto.setOpcourcd(cd);
+								dto.setOpcourstart(startdt);
+								
+								int result = opcourdao.startModify(dto);
+								
+								if (result > 0)
+								{
+									System.out.println("\n>> 수정이 완료되었습니다.");
+									return;
+								}	
+								
+							} catch (Exception e)
+							{
+								System.out.println(">> 다시 입력하세요.\n");
+							}
+							
+						}
+					} // case 3 end
+					
+					case 4 :
+					{	
+						while (true)
+						{
+							String enddt ="";
+							try
+							{
+								System.out.print("새로운 종료일(YYYY-MM-DD) : ");
+								enddt = sc.next();
+								java.sql.Date.valueOf(enddt);
+
+								OpenCourseDTO dto = new OpenCourseDTO();
+								
+								dto.setOpcourcd(cd);
+								dto.setOpcourend(enddt);
+								
+								int result = opcourdao.endModify(dto);
+								
+								if (result > 0)
+								{
+									System.out.println("\n>> 수정이 완료되었습니다.");
+									return;
+								}	
+								
+							} catch (Exception e)
+							{
+								System.out.println(">> 다시 입력하세요.\n");
+							}
+							
+						}
+					} // case 4 end
+					default: System.out.println(">> 잘못된 번호입니다.");
+					} // switch end
+					
+				}
+				else
+				{
+					System.out.println(">> 존재하지 않는 개설과정 입니다.\n");
+				}
+				
+			}
+		} 
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
 		}
 	}
 	
 	// 개설과정 삭제
-	public void opencourDelete() throws SQLException
+	private void opencourDelete()
 	{
-		ArrayList<OpenCourseDTO> list = opcourdao.list();
-		System.out.println("\n-------------------------------------------------------------------");
-		System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
-		System.out.println("-------------------------------------------------------------------");
-		for (OpenCourseDTO dto : list)
+		try
 		{
-			System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
-					, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10), dto.getOpcourend().substring(0, 10));
-		}
-		System.out.println("-------------------------------------------------------------------");
-		
-		do
-		{
-			System.out.print("삭제할 개설과정(개설과정코드) : ");
-			String cd = sc.next();
-			
-			ArrayList<OpenCourseDTO> listcd = opcourdao.list(cd);
-			
-			if (listcd.size() > 0)
+			ArrayList<OpenCourseDTO> list = opcourdao.list();
+			System.out.println("\n-------------------------------------------------------------------");
+			System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
+			System.out.println("-------------------------------------------------------------------");
+			for (OpenCourseDTO dto : list)
 			{
-				System.out.print("\n>> 정말 삭제하시겠습니까.(Y/N) : ");
-				String yn = sc.next();
+				System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
+						, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10), dto.getOpcourend().substring(0, 10));
+			}
+			System.out.println("-------------------------------------------------------------------");
+			
+			do
+			{
+				System.out.print("삭제할 개설과정(개설과정코드) : ");
+				String cd = sc.next();
 				
-				if (yn.equals("y") || yn.equals("Y"))
+				ArrayList<OpenCourseDTO> listcd = opcourdao.list(cd);
+				
+				if (listcd.size() > 0)
 				{
-					int result = opcourdao.remove(cd);
-					if (result > 0)
+					System.out.print("\n>> 정말 삭제하시겠습니까.(Y/N) : ");
+					String yn = sc.next();
+					
+					if (yn.equals("y") || yn.equals("Y"))
 					{
-						System.out.println("\n>> 삭제가 완료되었습니다.\n");
+						int result = opcourdao.remove(cd);
+						if (result > 0)
+						{
+							System.out.println("\n>> 삭제가 완료되었습니다.\n");
+							return;
+						}
+					}
+					else
+					{
+						System.out.println();
 						return;
 					}
+						
 				}
 				else
 				{
-					System.out.println();
-					return;
+					System.out.println(">> 존재하지 않는 개설과정 입니다.\n");
 				}
-					
-			}
-			else
-			{
-				System.out.println(">> 존재하지 않는 개설과정 입니다.\n");
-			}
-			
-		} while (true);
+				
+			} while (true);
+		} 
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
 	}
 	
 	// 개설과정 전체출력
-	public void opencourSelectAll() throws SQLException
+	private void opencourSelectAll()
 	{
-		ArrayList<OpenCourseDTO> list = opcourdao.list();
-		System.out.println("\n-------------------------------------------------------------------");
-		System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
-		System.out.println("-------------------------------------------------------------------");
-		for (OpenCourseDTO dto : list)
+		try
 		{
-			System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
-					, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10), dto.getOpcourend().substring(0, 10));
+			ArrayList<OpenCourseDTO> list = opcourdao.list();
+			System.out.println("\n-------------------------------------------------------------------");
+			System.out.println("개설과정코드   과정명   강의실   시작일   종료일");
+			System.out.println("-------------------------------------------------------------------");
+			for (OpenCourseDTO dto : list)
+			{
+				System.out.printf("%s   %s   %s   %s   %s\n", dto.getOpcourcd(), dto.getOpcourname()
+						, dto.getOpcourroom(), dto.getOpcourstart().substring(0, 10), dto.getOpcourend().substring(0, 10));
+			}
+			System.out.println("-------------------------------------------------------------------\n");
 		}
-		System.out.println("-------------------------------------------------------------------\n");
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
 	}
-	
-	
-	
-	
-	
-	
-
 }

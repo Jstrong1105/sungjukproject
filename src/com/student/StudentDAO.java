@@ -47,40 +47,59 @@ class StudentDAO
 		return result;
 	}
 	
-	// 학생이 성적을 가져오는 메소드
-	List<StudentDTO> getRecord(String sid) throws SQLException
-	{
-		List<StudentDTO> list = new ArrayList<StudentDTO>();
+	  // 학생 성적 출력
+	   ArrayList<StudentDTO> getRecord(String opensubcd) throws SQLException
+	   {
+	      ArrayList<StudentDTO> result = new ArrayList<StudentDTO>(); 
+	         
+	         // SQL 구문      
+	          String sql = 
+	                   " SELECT T.이름 , T.출결 , T.필기, T.실기, T.합 , RANK() OVER(ORDER BY T.합 DESC) AS 등수 "
+	                    + " FROM( "
+	                    + " SELECT T4.NAME AS 이름, "
+	                    + " T1.ATTENDANCE AS 출결, "
+	                    + " T1.WRITTEN AS 필기, "
+	                    + " T1.PRACTICAL AS 실기, "
+	                    + " ( "
+	                    + "   T1.ATTENDANCE * T5.ATTENDANCE_PCT / 100.0 "
+	                    + " + T1.WRITTEN    * T5.WRITTEN_PCT    / 100.0 "
+	                    + " + T1.PRACTICAL  * T5.PRACTICAL_PCT  / 100.0 "
+	                    + " ) AS 합 "
+	                    + " FROM SCORE T1 "
+	                    + " JOIN OPEN_SUBJECT T2 "
+	                    + " ON T1.OPEN_SUB_CD = T2.OPEN_SUB_CD "
+	                    + " JOIN COURSE_REGISTRATION T3 "
+	                    + " ON T1.COUR_REGI_CD = T3.COUR_REGI_CD "
+	                    + " JOIN STUDENTS T4 "
+	                    + " ON T3.STUDENT_CD = T4.STUDENT_CD "
+	                    + " JOIN SCORE_PERCENTAGE T5 "
+	                    + " ON T1.OPEN_SUB_CD = T5.OPEN_SUB_CD "
+	                    + " WHERE T1.OPEN_SUB_CD = ? "
+	                    + " ) T ";
+	          
+	         PreparedStatement pstmt = conn.prepareStatement(sql);
+	         
+	         pstmt.setString(1,opensubcd);
+	         
+	         ResultSet rs = pstmt.executeQuery();
+	         
+	         while(rs.next())
+	         {
+	            StudentDTO dto = new StudentDTO();
+	            
+	            dto.setName(rs.getString("이름"));
+	            dto.setAttendance(rs.getInt("출결"));
+	            dto.setWritten(rs.getInt("필기"));
+	            dto.setPractical(rs.getInt("실기"));
+	            dto.setRanking(rs.getInt("등수"));
+	            dto.setTotal(rs.getInt("합"));
+	            
+	            result.add(dto);
+	         }
 
-		String sql = "{call PRC_STUDENT_SCORE_ALL_SELECT(?,?)}";
-		CallableStatement cstmt = conn.prepareCall(sql);
-		
-		cstmt.setString(1, sid);
-		cstmt.registerOutParameter(2, OracleTypes.CURSOR);	// OUT 매개변수 등록
-		cstmt.executeQuery();
-		
-		ResultSet rs = (ResultSet)cstmt.getObject(2);
-	
-		while(rs.next())
-		{
-			StudentDTO dto = new StudentDTO();
-			dto.setName(rs.getString("ST_NAME"));
-			dto.setCourseName(rs.getString("COUR_NAME"));
-			dto.setSubName(rs.getString("SUB_NAME"));
-			dto.setStartDate(rs.getString("STARTDT"));
-			dto.setEndDate(rs.getString("ENDDT"));
-			dto.setBookName(rs.getString("TEXTBOOK_NAME"));
-			dto.setAttendance(rs.getInt("APLLY_PCT_ATTENDANCE"));
-			dto.setWritten(rs.getInt("APPLY_PCT_WRITTEN"));
-			dto.setPractical(rs.getInt("APPLY_PCT_PRACTICAL"));
-			dto.setTotal(rs.getInt("APPLY_PCT_TOT_SCORE"));
-			dto.setRanking(rs.getInt("RANKING"));
-			list.add(dto);
-		}
-		
-		cstmt.close();
-		rs.close();
-
-		return list;
-	}
+	         pstmt.close();
+	         rs.close();
+	         
+	         return result;
+	   }
 }

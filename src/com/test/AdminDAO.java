@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.util.DBConn;
+import com.util.FunctionUtil;
 
 public class AdminDAO
 {
@@ -254,8 +255,6 @@ public class AdminDAO
 	}
 	
 	
-	
-	
 // (관리자) 성적 관리
 	// 성적 입력
 	public int insertScore(ScoreDTO scoreDto)
@@ -319,7 +318,7 @@ public class AdminDAO
 
 		return result;
 	}
-	
+	 
 	
 	// 성적 수정
 	public int updateScore(ScoreDTO scoreDto)

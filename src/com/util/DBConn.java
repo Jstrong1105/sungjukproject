@@ -8,53 +8,51 @@ public class DBConn
 {
 	private static Connection dbConn;
 	
-	public static Connection getConnection() throws ClassNotFoundException, SQLException
-	{
-		if(dbConn == null)
-		{
-			String url = "jdbc:oracle:thin:@192.168.0.111:1521:xe";
-			String user = "TEAM1";
-			String psw = "1234";
-			
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			
-			dbConn = DriverManager.getConnection(url,user,psw);
-		}
-		
-		return dbConn;
-	}
-	
-	public static Connection getConnection(String url, String user, String psw) throws ClassNotFoundException, SQLException
-	{
-		if(dbConn == null)
-		{
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			
-			dbConn = DriverManager.getConnection(url,user,psw);
-		}
-		
-		return dbConn;
-	} 
-	
-	public static void close() 
+	public static Connection getConnection()
 	{
 		try
 		{
-			if(dbConn != null)
+			if (dbConn == null)
 			{
-				if(!dbConn.isClosed())
+				String url = "jdbc:oracle:thin:@192.168.0.111:1521:xe";  // 프로젝트 공용 DB
+				String user = "TEAM1";
+				String pwd = "1234";
+				
+				Class.forName("oracle.jdbc.driver.OracleDriver");
+				
+				dbConn = DriverManager.getConnection(url, user, pwd);
+			}
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new RuntimeException("JDBC 드라이버 로드 실패", e);
+		}
+		catch (SQLException e) {
+			throw new RuntimeException("DB 연결 실패", e);
+		}
+
+		
+		return dbConn;
+	}
+	
+	
+	public static void close()
+	{
+		try
+		{
+			if (dbConn != null)
+			{
+				if (!dbConn.isClosed())
 				{
 					dbConn.close();
 				}
+				
+				dbConn = null;
 			}
-		} 
-		
-		catch (Exception e)
-		{
-			System.out.println(e.toString());
 		}
-		
-		dbConn = null;
+		catch (SQLException e)
+		{
+			throw new RuntimeException("DB 연결 해제 실패", e);
+		}
 	}
 }
-

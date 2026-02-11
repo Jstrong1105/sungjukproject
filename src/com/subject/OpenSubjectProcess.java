@@ -5,6 +5,8 @@ import java.util.Scanner;
 
 import com.jsb.test.OpenCourseDTO;
 import com.jsb.test.TempProcess;
+import com.main.MenuRender;
+import com.util.FunctionUtil;
 
 public class OpenSubjectProcess
 {
@@ -14,9 +16,49 @@ public class OpenSubjectProcess
 	{
 		dao = new OpenSubjectDAO();
 	}
+
+	public void openSubjectFunc()
+	{
+		MenuRender<OpenSubjectMenu> menu = new MenuRender<>(OpenSubjectMenu.values());
+		menu.run("개설 과목", "");
+	}
+	
+	private enum OpenSubjectMenu implements FunctionUtil
+	{
+		OPEN_SUB_INSERT("개설과목 등록",new OpenSubjectProcess() :: inputOpenSubject),
+		OPEN_SUB_PRINT("개설과목 출력",new OpenSubjectProcess() :: printOpenSubject),
+		OPEN_SUB_COURSE("개설과목의 개설과정 변경",new OpenSubjectProcess() :: modifyOpenSubCourse),
+		OPEN_SUB_DATE("개설과목 날짜 변경",new OpenSubjectProcess() :: modifyOpenSubDate),
+		OPEN_SUB_PROF("개설과목 교수 변경",new OpenSubjectProcess() :: modifyOpenSubProf),
+		OPEN_SUB_SUB("개설과목 과목 변경",new OpenSubjectProcess() :: modifyOpenSubSubject),
+		OPEN_SUB_TEXT("개설과목 교재 수정",new OpenSubjectProcess() :: modifyOpenSubTextbook),
+		OPEN_SUB_DELETE("개설과목 삭제",new OpenSubjectProcess() :: removeOpenSubject)
+		;
+
+		OpenSubjectMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
 	
 	// 개설 과목 출력
-	public boolean printOpenSubList(ArrayList<OpenSubjectDTO> osList)
+	private boolean printOpenSubList(ArrayList<OpenSubjectDTO> osList)
 	{
 		if (osList.size() > 0)
 		{
@@ -38,7 +80,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설 과목 출력
-	public void printOpenSubject()
+	private void printOpenSubject()
 	{
 		try
 		{
@@ -59,7 +101,7 @@ public class OpenSubjectProcess
 	}
 
 	// 개설 과목 입력
-	public void inputOpenSubject()
+	private void inputOpenSubject()
 	{
 		try
 		{
@@ -120,7 +162,7 @@ public class OpenSubjectProcess
 	}
 
 	// 개설과목코드 선택
-	public String getSelectOpenSubCD() {
+	private String getSelectOpenSubCD() {
 		String openSubCD = null;
 		
 		try
@@ -154,7 +196,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설과목의 개설과정 변경
-	public void modifyOpenSubCourse()
+	private void modifyOpenSubCourse()
 	{
 		try
 		{
@@ -192,7 +234,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설과목의 시작날짜/종료날짜 변경
-	public void modifyOpenSubDate()
+	private void modifyOpenSubDate()
 	{
 		try
 		{
@@ -230,7 +272,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설과목의 교수 수정
-	public void modifyOpenSubProf()
+	private void modifyOpenSubProf()
 	{
 		try
 		{
@@ -267,7 +309,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설과목의 과목 수정
-	public void modifyOpenSubSubject()
+	private void modifyOpenSubSubject()
 	{
 		try
 		{
@@ -302,7 +344,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설과목의 교재 수정
-	public void modifyOpenSubTextbook()
+	private void modifyOpenSubTextbook()
 	{
 		try
 		{
@@ -337,7 +379,7 @@ public class OpenSubjectProcess
 	}
 	
 	// 개설과목 삭제
-	public void removeOpenSubject()
+	private void removeOpenSubject()
 	{
 		try
 		{

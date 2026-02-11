@@ -3,6 +3,9 @@ package com.subject;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.main.MenuRender;
+import com.util.FunctionUtil;
+
 public class TextbookProcess
 {
 	private TextbookDAO dao;
@@ -12,8 +15,44 @@ public class TextbookProcess
 		dao = new TextbookDAO();
 	}
 	
+	public void textBookFunc()
+	{
+		MenuRender<TextBookMenu> menu = new MenuRender<>(TextBookMenu.values());
+		menu.run("교재", "");
+	}
+	
+	private enum TextBookMenu implements FunctionUtil
+	{
+		TEXTBOOK_PRINT("교재 출력", new TextbookProcess() :: printTextbook),
+		TEXTBOOK_INSERT("교재 추가",new TextbookProcess() :: inputTextbook),
+		TEXTBOOK_UPDATE("교재 수정",new TextbookProcess() :: modifyTextbook),
+		TEXTBOOK_DELETE("교재 삭제",new TextbookProcess() :: removeTextbook)
+		;
+
+		TextBookMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
+	
 	// 교재 전체 출력
-	public void printTextbook()
+	void printTextbook()
 	{
 		try
 		{
@@ -45,7 +84,7 @@ public class TextbookProcess
 	}
 
 	// 교재 입력
-	public void inputTextbook()
+	private void inputTextbook()
 	{
 		try
 		{
@@ -76,7 +115,7 @@ public class TextbookProcess
 	}
 
 	// 교재 수정
-	public void modifyTextbook()
+	private void modifyTextbook()
 	{
 		try
 		{
@@ -132,7 +171,7 @@ public class TextbookProcess
 	}
 
 	// 교재 삭제
-	public void removeTextbook()
+	private void removeTextbook()
 	{
 		try
 		{

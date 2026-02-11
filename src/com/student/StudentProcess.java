@@ -1,20 +1,56 @@
 package com.student;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import com.main.MenuRender;
+import com.util.FunctionUtil;
 import com.util.InputHandler;
 
-class StudentProcess
+public class StudentProcess
 {
-	StudentProcess()
+	private StudentProcess()
 	{
 		dao = new StudentDAO();
+	}
+	
+	public static void students(String id)
+	{
+		MenuRender<StudentFunction> menu = new MenuRender<>(StudentFunction.values());
+		
+		menu.run("학생",id);
+	}
+	
+	private enum StudentFunction implements FunctionUtil
+	{
+		SCORE_PRINT("성적 조회",
+				(studentCd) -> {StudentProcess sp = new StudentProcess();
+						  sp.getRecord(studentCd);}),
+		UPDATE_PASSWORD("비밀번호 변경",
+				(studentCd)->{StudentProcess sp = new StudentProcess();
+						  sp.updatePassword(studentCd);})
+		;
+		
+		StudentFunction(String name, Consumer<String> function)
+		{
+			this.name = name;
+			this.function = function;
+		}
+		
+		private final String name;
+		private final Consumer<String> function;
+		
+		public String getName() { return name; }
+		public void run(String studentCd)
+		{
+			function.accept(studentCd);
+		}
 	}
 	
 	private StudentDAO dao;
 	
 	// 성적 가져오기
-	void getRecord(String sid)
+	private void getRecord(String sid)
 	{
 		try {
 		
@@ -40,7 +76,7 @@ class StudentProcess
 	}
 	
 	// 비밀번호 수정하기
-	void updatePassword(String studentCd)
+	private void updatePassword(String studentCd)
 	{
 		try
 		{

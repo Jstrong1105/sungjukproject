@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
  */
 public final class InputHandler
 {
-	// 외부에서 객체를 생성하지 못하도록 생성자를 private으로 설정
+	// 외부에서 객체를 생성하지 못하도록 생성자를 private 으로 설정
 	private InputHandler(){}
 	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

@@ -8,6 +8,7 @@ public class TeamMain
 {
 	public static void main(String[] args)
 	{
+		/*
 		Scanner sc = new Scanner(System.in);
 		
 		// 로그인
@@ -70,6 +71,7 @@ public class TeamMain
 			}
 
 		} while (true);
-
+*/
 	}
+	
 }

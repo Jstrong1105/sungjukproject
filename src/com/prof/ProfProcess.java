@@ -1,14 +1,17 @@
 package com.prof;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
+import com.main.MenuRender;
 import com.student.StudentDTO;
+import com.util.FunctionUtil;
 import com.util.InputHandler;
 
 /*
  * 교사가 실행하는 기능들
  */
-class ProfProcess
+public class ProfProcess
 {
 	private ProfDAO dao = new ProfDAO();
 	
@@ -16,8 +19,40 @@ class ProfProcess
 	
 	private ArrayList<StudentDTO> stuList;	// 학생 목록
 	
+	public static void prof(String id)
+	{
+		MenuRender<ProfFunction> menu = new MenuRender<>(ProfFunction.values());
+		menu.run("교수", id);
+	}
+	
+	private enum ProfFunction implements FunctionUtil
+	{
+		SUBJECT_PRINT("강의 목록 출력",
+				(profCd)->{ ProfProcess pp = new ProfProcess();
+						pp.subList(profCd);}),
+		UPDATE_PASSWORD("비밀번호 변경",
+				(profCd)->{ ProfProcess pp = new ProfProcess();
+						pp.updatePassword(profCd);})
+		;
+		
+		ProfFunction(String name, Consumer<String> function)
+		{
+			this.name = name;
+			this.function = function;
+		}
+		
+		private final String name;
+		private final Consumer<String> function;
+		
+		public String getName() { return name; }
+		public void run(String profCd)
+		{
+			function.accept(profCd);
+		}
+	}
+	
 	// 비밀 번호 수정
-	void updatePassword(String profCd)
+	private void updatePassword(String profCd)
 	{
 		try
 		{
@@ -49,7 +84,7 @@ class ProfProcess
 	}
 	
 	// 강의 목록 출력
-	void subList(String profCd)
+	private void subList(String profCd)
 	{
 		try
 		{

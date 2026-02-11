@@ -3,6 +3,9 @@ package com.subject;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.main.MenuRender;
+import com.util.FunctionUtil;
+
 public class SubjectProcess
 {
 	private SubjectDAO dao;
@@ -12,8 +15,44 @@ public class SubjectProcess
 		dao = new SubjectDAO();
 	}
 
+	public void subjectFunc()
+	{
+		MenuRender<SubjectMenu> menu = new MenuRender<>(SubjectMenu.values());
+		menu.run("과목", "");
+	}
+	
+	private enum SubjectMenu implements FunctionUtil
+	{
+		SUBJECT_PRINT("과목 출력", new SubjectProcess() :: printSubject),
+		SUBJECT_INSERT("과목 입력", new SubjectProcess() :: inputSubject),
+		SUBJECT_UPDATE("과목 수정", new SubjectProcess() :: modifySubject),
+		SUBJECT_DELETE("과목 삭제", new SubjectProcess() :: removeSubject)
+		;
+		
+		SubjectMenu(String name,Runnable func)
+		{
+			this.name = name;
+			this.func = func;
+		}
+		
+		private final String name;
+		private final Runnable func;
+		
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+
+		@Override
+		public void run(String id)
+		{
+			func.run();
+		}
+	}
+	
 	// 과목 전체 출력
-	public void printSubject()
+	void printSubject()
 	{
 		try
 		{
@@ -44,7 +83,7 @@ public class SubjectProcess
 	}
 
 	// 과목 입력
-	public void inputSubject()
+	private void inputSubject()
 	{
 		try
 		{
@@ -75,7 +114,7 @@ public class SubjectProcess
 	}
 	
 	// 과목 수정
-	public void modifySubject()
+	private void modifySubject()
 	{
 		try
 		{
@@ -131,7 +170,7 @@ public class SubjectProcess
 	}
 
 	// 과목 삭제
-	public void removeSubject()
+	private void removeSubject()
 	{
 		try
 		{

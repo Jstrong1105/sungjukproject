@@ -4,14 +4,16 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.main.MenuRender;
 import com.util.DBConn;
+import com.util.FunctionUtil;
 import com.util.InputHandler;
 
-class SignUp
+public class SignUp
 {
      private Connection conn;
      
-     SignUp() 
+     private SignUp() 
      {
          try
          {
@@ -23,7 +25,32 @@ class SignUp
          }
       }
    
-   void studentSignUp()
+     public static void signUp()
+     {
+    	 MenuRender<SignUpList> menu = new MenuRender<>(SignUpList.values());
+    	 menu.run("로그인", "");
+     }
+     
+     private enum SignUpList implements FunctionUtil
+     {
+     	STUDENT("학생 회원가입",new SignUp() :: studentSignUp),
+     	PROFESSOR("교수 회원가입", new SignUp() :: profSignUp),
+     	;
+     	
+     	SignUpList(String name,Runnable signUp)
+     	{
+     		this.name = name;
+     		this.signUp = signUp;
+     	}
+     	
+     	private String name;
+     	private Runnable signUp;
+     	
+     	public String getName() { return name; }
+     	public void run(String sid) { signUp.run(); } 
+     }
+     
+    private void studentSignUp()
    {
       try
       {
