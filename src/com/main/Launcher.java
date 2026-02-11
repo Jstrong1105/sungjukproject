@@ -15,6 +15,8 @@ public class Launcher
 	
 	public static void main(String[] args)
 	{
+		System.out.println("정세찬");
+		
 		while(true)
 		{
 			System.out.println("==== 성적 관리 프로그램 ====");

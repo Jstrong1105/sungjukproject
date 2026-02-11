@@ -8,7 +8,6 @@ public class Login
 {
 	public Login()
 	{
-		
 		try
 		{
 			conn = DBConn.getConnection();
