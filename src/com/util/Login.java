@@ -29,7 +29,6 @@ public class Login
 					" FROM STUDENTS"+ 
 					" WHERE STUDENT_CD = ? AND PW = ?";
 			
-			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setString(1, id);
