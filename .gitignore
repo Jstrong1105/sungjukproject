@@ -1,0 +1,32 @@
+/build/
+# --- Java & Compiled Files ---
+*.class
+*.war
+*.ear
+*.jar
+
+# --- Build Folders ---
+bin/
+build/
+target/
+
+# --- Eclipse Metadata ---
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+.loadpath
+
+# --- Eclipse Project Specifics ---
+# 프로젝트 설정 파일들 (팀원들과 설정을 공유해야 한다면 제외 가능)
+.settings/
+.project
+.classpath
+
+# --- Web Content Metadata ---
+# 이클립스 웹 프로젝트 관련 임시 파일
+.externalToolBuilders/
+*.launch
+
+# --- OS & IDE Specific ---
+.DS_Store
+Thumbs.db
