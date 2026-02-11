@@ -56,10 +56,5 @@ public class DBConn
 		
 		dbConn = null;
 	}
-	
-	public void abcd()
-	{
-		System.out.println("hi");
-	}
 }
 
