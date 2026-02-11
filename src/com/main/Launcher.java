@@ -17,6 +17,9 @@ public class Launcher
 	{	
 		while(true)
 		{
+			System.out.println("\033[H\033[2J\033[3J");
+			System.out.flush();
+			
 			System.out.println("==== 성적 관리 프로그램 ====");
 			System.out.println(" 0. 종료           ┌─────┐");
 			System.out.println(" 1. 로그인         │GRADE│");

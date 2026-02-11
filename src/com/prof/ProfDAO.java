@@ -76,10 +76,11 @@ class ProfDAO
       
       // SQL 구문
       String sql = 
-    		   "SELECT T2.SUB_NAME 과목명, T1.START_DT 시작일, T1.END_DT 종료일,T1.OPEN_SUB_CD 개설과목 "
+    		   "SELECT T2.SUB_NAME 과목명,T4.TEXTBOOK_NAME 교재명, T1.START_DT 시작일, T1.END_DT 종료일,T1.OPEN_SUB_CD 개설과목 "
     		  +" , t3.attendance_pct 출결, t3.written_pct 필기, t3.practical_pct 실기"
     		  +" FROM OPEN_SUBJECT T1 JOIN SUBJECT T2 ON T1.SUB_CD = T2.SUB_CD"
     		  +" JOIN SCORE_PERCENTAGE T3 ON T3.OPEN_SUB_CD = T1.OPEN_SUB_CD"
+    		  +" JOIN TEXTBOOK T4 ON T1.TEXTBOOK_CD = T4.TEXTBOOK_CD"
     		  +" WHERE PROF_CD = ?";
       
       // 작업 객체 생성
@@ -99,6 +100,7 @@ class ProfDAO
          dto.setAtt(rs.getInt("출결"));
          dto.setWri(rs.getInt("필기"));
          dto.setPra(rs.getInt("실기"));
+         dto.setTextBook(rs.getString("교재명"));
          
          result.add(dto);
       }
@@ -161,6 +163,7 @@ class ProfDAO
 	         dto.setWritten(rs.getInt("필기"));
 	         dto.setPractical(rs.getInt("실기"));
 	         dto.setRanking(rs.getInt("등수"));
+	         dto.setTotal(rs.getInt("합"));
 	         
 	         result.add(dto);
 	      }

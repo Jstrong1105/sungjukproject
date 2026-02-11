@@ -2,10 +2,19 @@ package com.prof;
 
 class ProfDTO
 {
-   private String open_sub_name, subject_cd;
-   java.sql.Date start_dt, end_dt;
-   private int att,wri,pra;
+   private String open_sub_name, subject_cd, textBook;
+	
+	java.sql.Date start_dt, end_dt;
+    private int att,wri,pra;
 	   	
+    String getTextBook()
+	{
+		return textBook;
+	}
+	void setTextBook(String textBook)
+	{
+		this.textBook = textBook;
+	}
 	String getOpen_sub_name()
 	{
 		return open_sub_name;
