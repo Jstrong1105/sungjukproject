@@ -27,6 +27,24 @@ class ProfDAO
 		}
    }
    
+   // 비밀번호 수정
+   int updatePassword(String profcd,String password) throws SQLException
+   {
+	   int result = 0;
+	   
+	   String sql = "UPDATE PROFESSOR SET PW = ? WHERE PROF_CD = ?";
+	   
+	   PreparedStatement pstmt = conn.prepareStatement(sql);
+	   
+	   pstmt.setString(1, password);
+	   pstmt.setString(2, profcd);
+	   
+	   result = pstmt.executeUpdate();
+	   
+	   return result;
+   }
+   
+   
    // 배점 수정
    int updatePCT(String oscd, String profcd, int att, int wri, int pra) throws SQLException
    {

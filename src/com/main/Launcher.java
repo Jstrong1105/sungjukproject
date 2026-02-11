@@ -15,8 +15,6 @@ public class Launcher
 	
 	public static void main(String[] args)
 	{
-		System.out.println("정세찬");
-		
 		while(true)
 		{
 			System.out.println("==== 성적 관리 프로그램 ====");
@@ -76,9 +74,6 @@ public class Launcher
 				System.out.println();
 				return;
 			}
-		
-			//asdasdasdsaadad
-			
 			
 			// 로그인 시도
 			else
