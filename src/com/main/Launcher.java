@@ -14,9 +14,7 @@ public class Launcher
 	private static SignUpList[] signUp = SignUpList.values();				// 회원 가입 메소드
 	
 	public static void main(String[] args)
-	{
-		System.out.println("정세찬");
-		
+	{	
 		while(true)
 		{
 			System.out.println("==== 성적 관리 프로그램 ====");
@@ -71,14 +69,10 @@ public class Launcher
 			
 			// 뒤로가기
 			if(answer == 0)
-			{
-				
+			{		
 				System.out.println();
 				return;
 			}
-		
-			//asdasdasdsaadad
-			
 			
 			// 로그인 시도
 			else
@@ -123,7 +117,15 @@ public class Launcher
 				// 관리자 로그인
 				else if(answer == 3)
 				{
-					InputHandler.readString("관리자 기능 입니다. 미구현");
+					if(login.adminLogin(id, psw))
+					{
+						InputHandler.readString(">> 관리자 로그인 성공");
+
+					}
+					else 
+					{
+						System.out.println(">> 로그인 실패");
+					}
 				}
 			}
 		}
