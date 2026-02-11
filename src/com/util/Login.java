@@ -8,6 +8,7 @@ public class Login
 {
 	public Login()
 	{
+		
 		try
 		{
 			conn = DBConn.getConnection();
@@ -28,7 +29,6 @@ public class Login
 			String sql = "SELECT * "+ 
 					" FROM STUDENTS"+ 
 					" WHERE STUDENT_CD = ? AND PW = ?";
-			
 			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			
