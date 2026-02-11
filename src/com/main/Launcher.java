@@ -13,9 +13,16 @@ public class Launcher
 	private static ProfFunction[] profF = ProfFunction.values();			// 교수 사용 메소드
 	private static SignUpList[] signUp = SignUpList.values();				// 회원 가입 메소드
 	
+	
+	
+	
+	public void asd()
+	{System.out.println("asd");
+	}
+	}
 	public static void main(String[] args)
 	{
-		System.out.println("윤주열");
+
 		while(true)
 		{
 			System.out.println("==== 성적 관리 프로그램 ====");
