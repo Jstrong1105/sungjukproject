@@ -16,6 +16,38 @@ class ProfProcess
 	
 	private ArrayList<StudentDTO> stuList;	// 학생 목록
 	
+	// 비밀 번호 수정
+	void updatePassword(String profCd)
+	{
+		try
+		{
+			String password;
+			
+			while(true)
+			{
+				password = InputHandler.readString("변경할 비밀번호 입력 : ");
+				
+				if(password.length() >= 6)
+				{
+					break;
+				}
+				else
+				{
+					System.out.println("비밀번호는 6자리를 넘어야합니다.");
+				}
+			}
+			
+			if(dao.updatePassword(profCd, password) > 0)
+			{
+				System.out.println(">> 비밀번호 변경 완료");
+			}
+		} 
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+	
 	// 강의 목록 출력
 	void subList(String profCd)
 	{
@@ -25,19 +57,19 @@ class ProfProcess
 			
 			if(subList.size() > 0)
 			{
-				System.out.println("===================================================================");
+				System.out.println("=======================================================================================");
 				
-				System.out.printf("번호      강의명   시작일     종료일   출결배점  필기배점  실기배점\n");
+				System.out.printf("번호      과목명   시작일     종료일   출결배점  필기배점  실기배점  교재명    \n");
 				
 				int i = 1;
 				
 				for(ProfDTO dto : subList)
 				{
-					System.out.printf("%2d %13s %tF %tF   %2d        %2d        %2d\n",i++,dto.getOpen_sub_name(),dto.getStart_dt(),dto.end_dt
-										,dto.getAtt(),dto.getWri(),dto.getPra());
+					System.out.printf("%2d %13s %tF %tF   %2d        %2d        %2d      %s\n",i++,dto.getOpen_sub_name(),dto.getStart_dt(),dto.end_dt
+										,dto.getAtt(),dto.getWri(),dto.getPra(),dto.getTextBook());
 				}
 				
-				System.out.println("===================================================================");
+				System.out.println("=======================================================================================");
 				
 				int answer = InputHandler.readInt(">> 강의 번호를 선택 : ",1,subList.size());
 				
@@ -85,18 +117,18 @@ class ProfProcess
 			
 			if(stuList.size() > 0)
 			{
-				System.out.println("===================================");
+				System.out.println("=============================================");
 				
-				System.out.printf("번호    학생명  출결 실기 필기 등수\n");
+				System.out.printf("번호    학생명  출결 실기 필기 총점 등수\n");
 				
 				int i = 1;
 				
 				for(StudentDTO dto : stuList)
 				{
-					System.out.printf("%2d %8s   %2d   %2d  %2d   %2d\n",i++,dto.getName(),dto.getAttendance(),dto.getWritten(),dto.getPractical(),dto.getRanking());
+					System.out.printf("%2d %8s   %2d   %2d   %2d   %3d  %2d\n",i++,dto.getName(),dto.getAttendance(),dto.getWritten(),dto.getPractical(),dto.getTotal(),dto.getRanking());
 				}
 				
-				System.out.println("===================================");
+				System.out.println("=============================================");
 				
 				InputHandler.readString("");
 			}

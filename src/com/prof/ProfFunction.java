@@ -6,13 +6,15 @@ import com.util.FunctionUtil;
 
 /*
  * 교수가 사용하는 기능을 나열한 enum
- * 하나뿐이다...
  */
 public enum ProfFunction implements FunctionUtil
 {
 	SUBJECT_PRINT("강의 목록 출력",
-			(sid)->{ ProfProcess pp = new ProfProcess();
-					pp.subList(sid);})
+			(profCd)->{ ProfProcess pp = new ProfProcess();
+					pp.subList(profCd);}),
+	UPDATE_PASSWORD("비밀번호 변경",
+			(profCd)->{ ProfProcess pp = new ProfProcess();
+					pp.updatePassword(profCd);})
 	;
 	
 	ProfFunction(String name, Consumer<String> function)
@@ -25,8 +27,8 @@ public enum ProfFunction implements FunctionUtil
 	private final Consumer<String> function;
 	
 	public String getName() { return name; }
-	public void run(String sid)
+	public void run(String profCd)
 	{
-		function.accept(sid);
+		function.accept(profCd);
 	}
 }

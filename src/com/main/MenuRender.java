@@ -40,6 +40,7 @@ class MenuRender<E extends Enum<E> & FunctionUtil>
 			{
 				System.out.println("\033[H\033[2J\033[3J");
 				System.out.flush();
+				
 				break;
 			}
 			
