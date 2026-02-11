@@ -3,6 +3,7 @@ package com.util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Login
 {
@@ -17,35 +18,42 @@ public class Login
 			System.out.println(e.toString());
 		}
 	}
-	
 	private Connection conn;
 	
-	// 학생 로그인
-	public boolean studentLogin(String id, String psw)
+	// 로그인 분기
+	public boolean selectLogin(int num, String id, String pwd)
 	{
 		try
 		{
-			String sql = "SELECT * "+ 
-					" FROM STUDENTS"+ 
-					" WHERE STUDENT_CD = ? AND PW = ?";
+			String s1 = "", s2 = ""; 
 			
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setString(1, id);
-			pstmt.setString(2, psw);
-			
-			ResultSet result = pstmt.executeQuery();
-			
-			if(result.next())
+			if (num == 1)
 			{
-				pstmt.close();
-				return true;
+				s1 = "STUDENTS";
+				s2 = "STUDENT_CD";		
+			}
+			else if(num ==2)
+			{
+				s1 = "PROFESSOR";
+				s2 = "PROF_CD";
 			}
 			else
 			{
-				pstmt.close();
-				return false;
+				s1 = "ADMINS";
+				s2 = "ID";		
 			}
+			String sql = "SELECT * FROM " + s1 + " WHERE " + s2 + " = ? AND PW = ?";
+				
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, id);
+			pstmt.setString(2, pwd);
+					
+			ResultSet rs = pstmt.executeQuery();
+			
+			return rs.next();
+			
+			
 		} 
 		catch (Exception e)
 		{
@@ -53,47 +61,29 @@ public class Login
 		}
 		
 		return false;
+	}
+	
+	// 학생 로그인
+	public boolean studentLogin(String id, String psw)
+	{	
+		boolean result = selectLogin(1,id,psw);
+		
+		return result; 
 	}
 	
 	// 교수 로그인
 	public boolean profLogin(String id, String psw)
-	{
-		try
-		{
-			String sql = "SELECT *" + 
-					" FROM PROFESSOR" + 
-					" WHERE PROF_CD = ? AND PW = ?";
-			
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setString(1, id);
-			pstmt.setString(2, psw);
-			
-			ResultSet result = pstmt.executeQuery();
-			
-			if(result.next())
-			{
-				pstmt.close();
-				return true;
-			}
-			else
-			{
-				pstmt.close();
-				return false;
-			}
-		} 
-		catch (Exception e)
-		{
-			System.out.println(e.toString());
-		}
+	{		
+		boolean result = selectLogin(2,id,psw);
 		
-		return false;
+		return result; 
 	}
 	
 	// 관리자 로그인
 	public boolean adminLogin(String id, String psw)
-	{
-		System.out.println("미구현입니다.");
-		return false;
-	}
+	{	
+		boolean result = selectLogin(3,id,psw);
+		
+		return result; 
+	}		
 }
