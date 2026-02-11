@@ -94,6 +94,7 @@ public class Login
 	public boolean adminLogin(String id, String psw)
 	{
 		System.out.println("미구현입니다.");
+		
 		return false;
 	}
 }
