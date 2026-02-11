@@ -30,3 +30,7 @@ RemoteSystemsTempFiles/
 # --- OS & IDE Specific ---
 .DS_Store
 Thumbs.db
+
+# WebContent 내부의 메타 정보 삭제
+WebContent/META-INF/
+WebContent/WEB-INF/classes/
