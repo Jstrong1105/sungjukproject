@@ -70,6 +70,7 @@ public class Launcher
 			// 뒤로가기
 			if(answer == 0)
 			{
+				
 				System.out.println();
 				return;
 			}
